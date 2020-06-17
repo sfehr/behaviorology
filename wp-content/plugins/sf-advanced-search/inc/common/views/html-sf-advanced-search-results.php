@@ -8,7 +8,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 $transient_name = $this->plugin_transients['autosuggest_transient']; // plugin setting
 $plugin_options = get_option( $this->plugin_name ); // plugin setting
 $get_form_input = filter_input( INPUT_POST, $this->plugin_name , FILTER_DEFAULT, FILTER_REQUIRE_ARRAY ); // form input
-
+$template = $plugin_options[ 'template' ]; // $template_name, $load, $require_once
+//$template = locate_template( 'template-parts/' . $plugin_options[ 'template' ] ); // $template_name, $load, $require_once
 
 
 // SEARCH TERM / POST TYPE PLUGIN SETTINGS
@@ -100,44 +101,69 @@ if ( ! empty( $meta_query ) ) {
 // SEARCH QUERY 
 
 $search_query = new \WP_Query( $args );
+
+// uses template for markup if set in plugin options, or uses the markup bellow if otherwise.
+if ( locate_template( 'template-parts/content-' . $template . '.php' ) ) {
 ?>
+	<div class="sf-search-results">
+		<?php 
+		if ( $search_query->have_posts() ) :
 
-<!-- Search Results -->
-<div class="sf-search-results">
-	<?php if ( $search_query->have_posts() ) : ?>
-		<ul class="flex-grid-container">
-			<!-- Start the Loop. -->
-			<?php
 			while ( $search_query->have_posts() ) :
-					$search_query->the_post();
-			?>
+				$search_query->the_post();
+				get_template_part( 'template-parts/content', $template );
 
-					<li class="flex-grid-item">
+			endwhile;
+			wp_reset_postdata();
 
-						<!-- the thumbnail -->
-						<p>
-							<?php if ( has_post_thumbnail() ) : ?>
-								<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium' ); ?></a>
-							<?php endif; ?>
-						</p>
-						<!-- title -->
-						<p class="card-title">
-							<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-						</p>
-						<!-- excerpt -->
-						<p class="card-excerpt">
-							<?php echo wp_trim_words( get_the_content(), 30, ' ...' ); ?>
-						</p>
+			else :
+				echo __( 'Nothing Found ...', $this->plugin_text_domain );
 
-					</li> <!-- flex-grid-item -->
-				<?php endwhile; ?>
-				<?php wp_reset_postdata(); ?>
-		</ul> <!-- flex-grid-container -->
-		<?php else : ?>
-			<p>
-				<?php echo __( 'Nothing Found ...', $this->plugin_text_domain ); ?>
-			</p>
-		<?php endif; ?>
-</div> <!-- sf-search-results -->
+		endif; 
+		?>
+	</div> <!-- sf-search-results -->
+<?php
+}
 
+else{
+	
+?>	
+	<!-- Search Results -->
+	<div class="sf-search-results">
+		<?php if ( $search_query->have_posts() ) : ?>
+			<ul class="flex-grid-container">
+				<!-- Start the Loop. -->
+				<?php
+				while ( $search_query->have_posts() ) :
+						$search_query->the_post();
+				?>
 
+						<li class="flex-grid-item">
+
+							<!-- the thumbnail -->
+							<p>
+								<?php if ( has_post_thumbnail() ) : ?>
+									<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'medium' ); ?></a>
+								<?php endif; ?>
+							</p>
+							<!-- title -->
+							<p class="card-title">
+								<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+							</p>
+							<!-- excerpt -->
+							<p class="card-excerpt">
+								<?php echo wp_trim_words( get_the_content(), 30, ' ...' ); ?>
+							</p>
+
+						</li> <!-- flex-grid-item -->
+					<?php endwhile; ?>
+					<?php wp_reset_postdata(); ?>
+			</ul> <!-- flex-grid-container -->
+			<?php else : ?>
+				<p>
+					<?php echo __( 'Nothing Found ...', $this->plugin_text_domain ); ?>
+				</p>
+			<?php endif; ?>
+	</div> <!-- sf-search-results -->	
+<?php	
+}

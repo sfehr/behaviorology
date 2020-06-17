@@ -24,6 +24,7 @@
  * bhv_custom_head()					 | Add meta tags to the head
  * bhv_get_media_group_entries() 		 | Get Custom Field Values: Media Group
  * bhv_create_slug()					 | Creates an url friendly string
+ * bhv_filter_menu_attributes()			 | Adds a data-slug attribute to the naviagtion links
  * 
  * 
  *  
@@ -499,7 +500,7 @@ function bhv_loop_start( $query ) {
 				<?php print bhv_get_class_list(); // get terms ?>
 			</ul><!-- End .menu-container -->	
 		</div><!-- End .studio-container -->
-		<div id="content-container">
+		<div id="content-container" class="sf-search-result-container">
 		<?php // open tag content-container: element to display ajax results
 	}
 }
@@ -742,7 +743,6 @@ function bhv_filter_menu_attributes( $atts, $item, $args, $depth ) {
 	
 	return $atts;
 }
-
 
 
 

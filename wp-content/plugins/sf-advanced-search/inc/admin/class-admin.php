@@ -189,9 +189,13 @@ class Admin {
 			$valid_options[ 'post_type' ][ 'post' ] = ( isset( $input[ 'post_type' ][ 'post' ] ) && ! empty( $input[ 'post_type' ][ 'post' ] ) ) ? 1 : 0;
 			$valid_options[ 'post_type' ][ 'page' ] = ( isset( $input[ 'post_type' ][ 'page' ] ) && ! empty( $input[ 'post_type' ][ 'page' ] ) ) ? 1 : 0;
 			
+			
 			// POST TYPE FOR TAXONOMY
 			$valid_options[ 'post_type_for_taxonomy' ] = ( isset( $input[ 'post_type_for_taxonomy' ] ) && ! empty( $input[ 'post_type_for_taxonomy' ] ) ) ? $input[ 'post_type_for_taxonomy' ] : 0;
 			
+			
+			// TEMPLATE
+			$valid_options[ 'template' ] = ( isset( $input[ 'template_search_result' ] ) && ! empty( $input[ 'template_search_result' ] ) ) ? $input[ 'template_search_result' ] : '';
 
 			// delete the transitent.
 			$transient_name = $this->plugin_transients['autosuggest_transient'];

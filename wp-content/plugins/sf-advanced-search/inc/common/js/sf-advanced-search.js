@@ -10,6 +10,8 @@
 	// get cached post titles from the params object of wp_localize_script.
 	var cachedPostTitles = ( false !== params.cached_post_titles && params.cached_post_titles.length ) ? params.cached_post_titles : false;
 	
+	var resultsContainer = ( undefined !== $( '.sf-search-result-container' ) ) ? $( '.sf-search-result-container' ) : $( '#sf-form-response-container' );
+	
 	// AUTO-SUGGEST
 	
 	$( "#sf-advanced-search-form #sf-search-box" ).autocomplete({
@@ -143,12 +145,12 @@
 			
 			// on success
             .done( function( response ) { // response from the PHP action
-                $( '#sf-form-response-container' ).html( '<h2>The request was successful </h2><br>' + response );
+                resultsContainer.html( response );
             })
             
             // something went wrong  
             .fail( function() {
-                $( '#sf-form-response-container' ).html( '<h2>Something went wrong.</h2><br>' );
+                resultsContainer.html( '<h2>Something went wrong.</h2>' );
             })
         
             // after all this time?

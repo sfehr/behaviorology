@@ -97,7 +97,7 @@ class Common {
 		$cached_posts = get_transient( $transient_name );
 		if ( $cached_posts ) {
 			foreach ( $cached_posts as $index => $post ) {
-				$cached_posts_titles[ $index ] = $post['title'];
+				$cached_posts_titles[ $index ] = $post[ 'title' ];
 			}
 		}
 
@@ -170,11 +170,16 @@ class Common {
 			// Check if posts were found.
 			if ( $posts_in_required_post_types ) {
 				foreach ( $posts_in_required_post_types as $key => $post ) {
+					
+					// get terms
+//					$taxonomy ='teacher';
+//					$terms = get_the_terms( $post->ID, $taxonomy );
 
 					// cache the post titles and post ids.
 					$cached_post = array(
-						'id' => $post->ID,
+						'id' 	=> $post->ID,
 						'title' => esc_html( $post->post_title ),
+//						'terms' => ! empty( $terms ) ? $terms : false,
 					);
 					$cached_posts[] = $cached_post;
 				}
@@ -325,6 +330,7 @@ class Common {
 			// form input is stored inside an associative array with the plugin's name.
 			$get_form_input = filter_input( INPUT_POST, $this->plugin_name , FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 			$search_term = isset( $get_form_input['search_key'] ) ? sanitize_text_field( $get_form_input['search_key'] ) : false;
+			$form_content = '';
 
 			// check if the form was submitted.
 			if ( isset( $search_term ) && ! empty( $search_term ) ) {

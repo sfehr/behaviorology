@@ -111,7 +111,11 @@ function sf_initialize_list(){
 	
 	// CONDITIONAL CALLBACKS
 	if( jQuery( 'body' ).hasClass( 'list-view' ) ){
-		sf_sort_list();
+		sf_sort_list(); // ad tiny sort when list is displayed
+	}
+	if( jQuery( 'body' ).hasClass( 'search-active' ) ){
+		jQuery( 'body' ).addClass( 'result-view' ); // add result-view class when results are output
+		jQuery( 'body' ).removeClass( 'initial' ); // remove initial class in case it is still applied
 	}
 	
 		
@@ -198,6 +202,7 @@ function sf_close_button(){
 		jQuery( 'body' ).removeClass( 'single' ); // remove single class from body
 		jQuery( 'body' ).removeClass( 'page' ); // remove single class from body
 		jQuery( 'body' ).removeClass( 'list-view' ); // remove list-view class from body
+		jQuery( 'body' ).removeClass( 'result-view' ); // Search: remove list-view class from body
 		sf_initialize_list(); // initialize list for restoring event listeners etc.
 	});
 	
@@ -245,8 +250,6 @@ function sf_expand_media(){
 function sf_scroll_anchor(){
 	
 	if( jQuery( 'a[href^=\\#]' ) && jQuery( 'body' ).hasClass( 'single' ) ){
-		
-		console.log( 'fired' );
 		
 		jQuery( 'a[href^=\\#]' ).click( function( e ) { 
 			e.preventDefault(); 

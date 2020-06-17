@@ -1131,7 +1131,10 @@ p:last-of-type{
 .site-header:hover .site-title,
 .search-active .site-title,
 .search-active .site-header:hover .main-navigation,
-.search-active .page-title-container
+.search-active .page-title-container,
+.result-view .site-title,
+.result-view .site-header:hover .main-navigation,
+.result-view .page-title-container
 
 {
 	opacity: 0;
@@ -1237,11 +1240,14 @@ p:last-of-type{
 }
 
 /* start page image */
-.initial.home #content-container{
+.initial.home #content-container,
+.result-view #content-container
+{
 	display: unset;
 }
 
 .initial.home .studio-container,
+.result-view .studio-container,
 .initial.home .student_project
 {
 	display: none;
@@ -1263,7 +1269,7 @@ p:last-of-type{
 {
 	display: grid;
 	font-size: var(--font-size-s);
-	margin: 8px 0 0 0;
+	margin: 8px 0;
 	padding: 2px 0px 2px 6px;
 	box-shadow: var(--border-line);
 	
@@ -1510,7 +1516,7 @@ p:last-of-type{
 	transform: rotate(-45deg);
 }
 
-.home .ui-btn-close{
+.home:not(.search-active):not(.result-view) .ui-btn-close{
 	display: none;
 }
 
@@ -1518,6 +1524,7 @@ p:last-of-type{
 # Plugins
 ---------------------------------------------------------------*/
 
+/* SF Advanced Search */
 .sf-advanced-search-form-container,
 #sf-advanced-search-form,
 .sf-input-container,
@@ -1534,7 +1541,12 @@ p:last-of-type{
 .search-active .sf-advanced-search-form-container,
 .search-active #sf-advanced-search-form,
 .search-active .sf-input-container,
-.search-active #sf-search-box
+.search-active #sf-search-box,
+.result-view .sf-advanced-search-form-container,
+.result-view #sf-advanced-search-form,
+.result-view .sf-input-container,
+.result-view #sf-search-box,
+.sf-search-result-container
 {
 	z-index: 2;
 	display: block; 
@@ -1546,6 +1558,7 @@ p:last-of-type{
 
 #sf-search-box
 {
+	top: 3px;
 	border: 0;
 	color: black;
 	font-size: var(--font-size-l);
@@ -1562,7 +1575,7 @@ p:last-of-type{
 	display: none;
 }
 
-
+/* Marquee */
 .marquee > a,
 .marquee > #page-title
 {
