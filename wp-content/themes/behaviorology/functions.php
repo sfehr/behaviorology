@@ -23,8 +23,17 @@
  * bhv_get_list_entries()				 | Markup and values for list entries
  * bhv_custom_head()					 | Add meta tags to the head
  * bhv_get_media_group_entries() 		 | Get Custom Field Values: Media Group
+ * bhv_get_text_content_term() 		     | Get Custom Field Values: Text Content Term 
  * bhv_create_slug()					 | Creates an url friendly string
  * bhv_filter_menu_attributes()			 | Adds a data-slug attribute to the naviagtion links
+ * bhv_gutenberg_blocks()				 | Limiting Gutenbergs Block elements
+ * bhv_custom_post_order()				 | Order Posts by Post Type
+ * bhv_modify_wp_query()				 | Modifying the initial WP query with pre_get_posts hook --> Pluginize ?
+ *  
+ *  
+ * 
+ * 
+ * 
  * 
  * 
  *  
@@ -415,7 +424,7 @@ function sf_ajax_loader_handler() {
 	// ARGS
 	$args = array(
 		'post_type' => $post_type,
-		'p' => $post_id
+		'p'		    => $post_id,
 	);
 		
 	// TAX QUERY
@@ -648,6 +657,7 @@ function bhv_get_media_group_entries( $img_size = '' ) {
 		// ENTRY VALUES
 		$group_title = isset( $entry[ 'bhv_media_title' ] ) ? $entry[ 'bhv_media_title' ] : ''; // section title for project navigation
 		$media_type = isset( $entry[ 'bhv_media_select_media' ] ) ? $entry[ 'bhv_media_select_media' ] : ''; // media type: image or movie 
+		$columns = isset( $entry[ 'bhv_media_select_columns' ] ) ? $entry[ 'bhv_media_select_columns' ] : ''; // amount of columns for css-grid-layout
 		// resets the array
 		$media = null;
 		
@@ -669,13 +679,28 @@ function bhv_get_media_group_entries( $img_size = '' ) {
 
 		// SAVING THE DATA
 		// final check if a value exists before saving the markup
-		if ( isset( $media, $group_title ) ){
+		if ( isset( $media, $group_title, $columns ) ){
 			$data[ $index ][ 'media' ] = implode( '', $media );
 			$data[ $index ][ 'group_title' ] = $group_title;
+			$data[ $index ][ 'columns' ] = $columns;
 		}		
 	}
 	
 	return $data;
+}
+
+
+
+/** SF:
+ * Get Custom Field Values: Text Content Term
+ */
+function bhv_get_text_content_term() {
+	
+	// GET FIELD
+	$data = get_post_meta( get_the_ID(), 'bhv_content_link_term', true );
+	$content_term = isset( $data ) ? $data : '–';
+	
+	return $content_term;
 }
 
 
@@ -689,34 +714,6 @@ function bhv_create_slug( $string ) {
 
 
 
-/** SF:
- * Pluginize ?
- */
-function bhv_modify_wp_query( $query ) {
-
-	if( $query->is_main_query() && is_home() ){	
-		
-		// VARS
-		$post_types = array( 'student_project', 'class' );
-		$meta_query = ( is_array( $query->get( 'meta_query' ) ) ) ? $query->get( 'meta_query' ) : []; //Get original meta query before adding additional arguments
-		$meta_query[] = array(
-							'key'     => 'bhv_hero_image_check',
-							'value'   => 'on',
-							'compare' => '==',
-						); 
-		
-		// SET
-		$query->set( 'meta_query', $meta_query ); //Add our meta query to the original meta queries
-		$query->set( 'post_type', $post_types );
-		$query->set( 'offset', '1' );
-		$query->set( 'orderby', 'rand' );
-		
-	}
-}
-add_action( 'pre_get_posts', 'bhv_modify_wp_query' );
-
-
-
 
 /** SF:
  *  adds a data-slug attribute to the naviagtion links
@@ -726,7 +723,7 @@ add_filter( 'nav_menu_link_attributes', 'bhv_filter_menu_attributes', 10, 4 );
 function bhv_filter_menu_attributes( $atts, $item, $args, $depth ) {
 	
 	if ( 'menu-1' != $args->theme_location ) {
-		return $atts; // abort if not main menu
+		return $atts; // abort if not main menu or polylang menu-item
 	}
 	
 	// VARS
@@ -746,177 +743,74 @@ function bhv_filter_menu_attributes( $atts, $item, $args, $depth ) {
 
 
 
-/** SF:
- * Custom Post Title via Filter
+
+/** 
+ * 
+ * Limiting Gutenbergs Block elements
+ *  
  */
-/*
-//setup hooks in the template_redirect action => once the main WordPress query is set
-function bhv_hooks_setup() {
+function bhv_gutenberg_blocks() {
 	
-	if ( is_home() ){ 
-		return; // abort on home
-	} 
-        
-    add_action( 'loop_start', 'bhv_set_query' );
-	add_action( 'loop_end', 'bhv_set_query', 100 );
-}
-add_action( 'template_redirect', 'bhv_hooks_setup', 20 );
-*/
-
-
-
-/** SF:
- * Custom Post Title via Filter
- */
-/*
-function bhv_set_query( $query ) {
-	
-    global $wp_query; // current query: will be modifyed
-	global $wp_the_query; // initial query: to reset modifyed query to initial
-	
-	// get ids of attached posts
-	$attached_ids = get_post_meta( get_the_ID(), 'bhv_attached_post', true );
-	$attached_ids = ( !empty( $attached_ids ) ? $attached_ids : 0 );
-	
-	$post_types = array( 'any' );
-	
-	// post order
-	$post_order = array(
-		'post_type' => 'ASC',
-		'date' => 'DESC',
-	);	
-	
-	// query args
-	$args = array(
-		'post_type'           => $post_types,
-		'post_status'         => 'publish',
-		'post__in'			  => $attached_ids,		
-		'posts_per_page'      => -1,
-		'no_found_rows'       => true, // true by default.
-		'suppress_filters'    => false, // true by default.
-		'ignore_sticky_posts' => true, // true by default.
-		'orderby'             => $post_order,	
-	);	
-	
-	// 
-	switch ( current_filter() ) {
-		case 'loop_start':
-			//replace the current query by a custom query
-		    //Note: the initial query is stored in another global named $wp_the_query
-			// check if the current post has attached posts
-			if( $query->is_main_query() && $attached_ids != 0 ){
-				$wp_query = new WP_Query( $args );
-			}
-    	break;
-
-    	default:
-    		//back to the initial WP query stored in $wp_the_query
-			if( $query->is_main_query() ){
-    			$wp_query = $wp_the_query;
-			}
-    	break;
-    }
-}
-*/
-
-
-/*
-// post contents as variable
-function callback( $buffer ) {
-	
-//	return $buffer;
-	
-}
-
-function bhv_buffer_start() {
-	
-//	ob_start( 'callback' );
-//	ob_start();
-	echo 'loop start';
-}
-
-function bhv_buffer_end() {
-//	ob_end_flush();
-	
-	$data = ob_get_clean();
-
-	$resp = array(
-		'success' => true,
-		'data'    => $data
+	return array(
+		'core/paragraph'
 	);
-	
-echo 'loop end';
 }
-//add_action( 'wp_head', 'bhv_buffer_start' );
-//add_action( 'loop_end', 'bhv_buffer_end' );
-add_action( 'loop_start', 'bhv_buffer_start' );
-add_action( 'loop_end', 'bhv_buffer_end' );
-*/
+add_filter( 'allowed_block_types', 'bhv_gutenberg_blocks' );
 
 
-/*	
-function sf_ajax_loader_handler() {
-	
-//	check_ajax_referer( 'sf_ajax_loader_nonce' );
-	
-//	global $wp_query; // load main query object
-	
-	$target = filter_input( INPUT_POST, 'target', FILTER_DEFAULT ); // get the url from javaScript
-	$target_id = url_to_postid( $target ); // transform url to post id
-	
-//	echo apply_filters( 'the_content', $page_object->post_content );
-	
-//	$args;
-//	$args = array_merge( $wp_query->query_vars, array( 'p' => $target_id ) );
-	
-	$post_types = 'any';
-	
-	// query args
-	$args = array(
-//		'p'					  => $target_id, 
-	);		
 
-	
-global $post;	
-	
-//	query_posts( $args );
-	
-	
-	$wp_query = new WP_Query( $args );
- 
 
+/** 
+ * 
+ * Order Posts by Post Type
+ *  
+ */
+function bhv_custom_post_order( $orderby, $wp_query ){
 	
-	if( have_posts() ) :
-		// run the loop
-		while( have_posts() ) : 
+    if( $wp_query->is_main_query() ){
+		return $orderby;
+	}
 	
-			the_post();
- 
-			$post = get_post( $target_id );
-			setup_postdata( $post );
-			get_template_part( 'template-parts/content', 'tmpl_project_list' );
-	
-//			get_template_part( 'tmpl_project_list' );
-			// for the test purposes comment the line above and uncomment the below one
-			the_title();
- 
- 
-		endwhile;
-	
- 	endif;
-	wp_die(); // here we exit the script and even no wp_reset_query() required!
-	
-	
-//	$template = 'tmpl_project_list.php';
-//	get_template_part( 'tmpl_project_list' );
-//	get_template_part( 'template-parts/content', 'tmpl_project_list' );	
-	
-//	die();
-	
-//	wp_send_json();
-	
-	
+	global $wpdb;
+	$orderby =
+		"
+		CASE WHEN {$wpdb->prefix}posts.post_type = 'class' THEN '1' 
+		WHEN {$wpdb->prefix}posts.post_type = 'student_project' THEN '2' 
+		ELSE {$wpdb->prefix}posts.post_type END ASC, 
+		{$wpdb->prefix}posts.post_title ASC";
+	return $orderby;
 }
-add_action( 'wp_ajax_sf_ajax_loader', 'sf_ajax_loader_handler' );
-add_action( 'wp_ajax_nopriv_sf_ajax_loader', 'sf_ajax_loader_handler' );
-*/
+add_filter( 'posts_orderby', 'bhv_custom_post_order', 10, 2 );
+
+
+
+
+/** SF:
+ * Pluginize ?
+ * Modifying the initial WP query with pre_get_posts hook
+ */
+function bhv_modify_wp_query( $query ) {
+
+	if( $query->is_main_query() && is_home() ){	
+		
+		// VARS
+		$post_types = array( 'student_project'  );
+		$meta_query = ( is_array( $query->get( 'meta_query' ) ) ) ? $query->get( 'meta_query' ) : []; //Get original meta query before adding additional arguments
+		$meta_query[] = array(
+							'key'     => 'bhv_hero_image_check',
+							'value'   => 'on',
+							'compare' => '==',
+						); 
+		
+		// SET
+		$query->set( 'meta_query', $meta_query ); //Add our meta query to the original meta queries
+		$query->set( 'post_type', $post_types );
+		$query->set( 'posts_per_page', 5 );
+		$query->set( 'orderby', 'rand' );
+		
+	}
+}
+add_action( 'pre_get_posts', 'bhv_modify_wp_query' );
+
+
+

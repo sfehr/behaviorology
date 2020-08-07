@@ -18,6 +18,11 @@ jQuery( document ).ready( function( $ ) {
 	// EVENT
 	$( document ).on( 'click', 'a[data-target]', function( event ) { 
 		
+		// Exclude specific links from processing
+		if( $( this ).parent().hasClass( 'lang-item' ) ){
+			return;
+		}
+		
 		event.preventDefault();
 		
 		link_obj = $( this ).data( 'target' ); // term_id, name, post_id

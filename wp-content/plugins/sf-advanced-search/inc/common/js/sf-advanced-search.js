@@ -10,12 +10,25 @@
 	// get cached post titles from the params object of wp_localize_script.
 	var cachedPostTitles = ( false !== params.cached_post_titles && params.cached_post_titles.length ) ? params.cached_post_titles : false;
 	
+	// get cached posts data from the params object of wp_localize_script.
+	var cachedPostsData = ( false !== params.cached_posts_data ) ? params.cached_posts_data : false;	
+	
+	if( cachedPostsData ) {
+
+			// this will be visible when you have run the search at least once.
+			// you will need to extract the title and image uri and use it accordingly.
+			// see how I extracted the image uri in the .done() function of the AJAX request below.
+			console.log( "Cached retrieved from WordPress ");
+			console.log( cachedPostsData );
+	}	
+	
 	var resultsContainer = ( undefined !== $( '.sf-search-result-container' ) ) ? $( '.sf-search-result-container' ) : $( '#sf-form-response-container' );
 	
 	// AUTO-SUGGEST
 	
 	$( "#sf-advanced-search-form #sf-search-box" ).autocomplete({
 		delay: 300,
+		disabled: true,
 		source: function( request, response ) {
 
 			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp.

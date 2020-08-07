@@ -34,7 +34,8 @@ jQuery( document ).ready(
 	sf_close_button(),
 	sf_page_title_update(),
 	sf_expand_media(),
-	sf_scroll_anchor()
+	sf_scroll_anchor(),
+	sf_touch_device()
 );
 
 
@@ -73,21 +74,35 @@ window.onresize = function() {
  */ 
 function sf_start_page_image(){
 	
+	// check if its start page
 	if( jQuery( 'body' ).hasClass( 'home' ) ){
 		
 		// add class initial to body
 		jQuery( 'body' ).addClass( 'initial' )
 	
-		// get the image
-		var image = jQuery( 'body' ).find( '.post-thumbnail' );
-		jQuery( '#content-container' ).html( image );
+		// get the image and add it to the container
+		var images = jQuery( 'body' ).find( '.post-thumbnail' );
+		jQuery( '#content-container' ).html( images );
 
 		// remove initial class again on click event
-		jQuery( image ).on( 'click', this, function( e ){
+		jQuery( images ).on( 'click', this, function( e ){
 			e.preventDefault();
 			jQuery( 'body' ).removeClass( 'initial' );
+			clearInterval( diashow );
 			sf_initialize_list();
-		});		
+		});
+		
+		// Image Slider
+		jQuery( '#content-container > .post-thumbnail:gt(0)' ).hide();
+
+		var diashow = setInterval( function() { 
+		  jQuery( '#content-container > .post-thumbnail:first' )
+			.fadeOut( 2000 )
+			.next()
+			.fadeIn( 2000 )
+			.end()
+			.appendTo( '#content-container' );
+		},  5000);
 	}
 }
 	
@@ -131,7 +146,7 @@ function sf_initialize_list(){
 function sf_search_focus_handler(){
 	
 	// ON FOCUS
-	jQuery( 'body' ).on( 'click focus', '.main-navigation .menu-item-type-custom', function( event ){ // adds search-active class to body 
+	jQuery( 'body' ).on( 'click focus', '.main-navigation .menu-item-type-custom:not(.lang-item)', function( event ){ // adds search-active class to body 
 		if( event == 'click' ){
 			event.preventDefault();
 		}
@@ -203,6 +218,7 @@ function sf_close_button(){
 		jQuery( 'body' ).removeClass( 'page' ); // remove single class from body
 		jQuery( 'body' ).removeClass( 'list-view' ); // remove list-view class from body
 		jQuery( 'body' ).removeClass( 'result-view' ); // Search: remove list-view class from body
+		jQuery( '#sf-search-box' ).val( '' ) // Search: reset the input field
 		sf_initialize_list(); // initialize list for restoring event listeners etc.
 	});
 	
@@ -274,6 +290,8 @@ function sf_sort_list(){
 		,tableHead = table.querySelector( '.list-header' )
 		,tableHeaders = tableHead.querySelectorAll( 'div' )
 	;
+	var sortIcon = document.createElement( 'SPAN' );
+	sortIcon.className = 'ui-sort-icon';
 	
 	tableHead.addEventListener( 'click', function( e ){
 		var tableHeader = e.target
@@ -294,8 +312,21 @@ function sf_sort_list(){
 				order: order
 			}
 		);
+		
+		tableHeader.appendChild( sortIcon );
 	});	
-	
 }
 
 
+
+/* TOUCH DEVICE
+ *
+ * Handles the touch device actions.
+ *
+ */
+function sf_touch_device(){
+	
+	jQuery( 'body' ).on( 'click tap', '.site-title', function(){
+	});
+	
+}	

@@ -15,6 +15,8 @@
 /** BHV CMB2 Functions Inventory
  *  
  * bhv_attached_posts_field_metabox()				 | Metabox posts can be attached to a post (creating post type relations)
+ * bhv_hero_image_option_box()						 | Hero image that is featured on the start page
+ * bhv_content_link_term()							 | Text field for setting the navigation-link-term for the main content
  * bhv_register_media_box()							 | Image or movies type repeatable group
  *  
  */
@@ -60,7 +62,7 @@ function bhv_attached_posts_field_metabox() {
 
 
 
-/* MEDIA BOX
+/* HERO IMAGE
 *
 * [radio] 
 *
@@ -86,6 +88,37 @@ function bhv_hero_image_option_box() {
 		'type' => 'checkbox',
 	) );	
 }
+
+
+
+/* HERO IMAGE
+*
+* [radio] 
+*
+*/
+add_action( 'cmb2_admin_init', 'bhv_content_link_term' );
+
+function bhv_content_link_term() {
+	
+	$prefix = 'bhv_content_link_';
+	
+	// METABOX
+	$bhv_content_term = new_cmb2_box( array(
+		'id'            => $prefix . 'metabox',
+		'title'         => esc_html__( 'Text Content', bhv_get_theme_text_domain() ),
+		'object_types'  => array( 'student_project' ), // Post type
+	) );	
+	
+	// CHECKBOX FIELD
+	$bhv_content_term->add_field( array(
+		'name'    => esc_html__( 'Content Term', bhv_get_theme_text_domain() ),
+		'desc'    => esc_html__( 'A term for the text content, which will be displayed in the project navigation.', bhv_get_theme_text_domain() ),
+		'default' => esc_html__( 'Hypothesis', bhv_get_theme_text_domain() ),
+		'id'      => $prefix . 'term',
+		'type'    => 'text_medium'
+	) );
+}
+
 
 
 
@@ -135,7 +168,7 @@ function bhv_register_media_box() {
 		'type'    => 'text_medium'
 	) );	
 
-	// SELECT FIELD 
+	// SELECT FIELD (Media Type)
 	$cmb_media_group->add_group_field( $group_field_id, array(
 		'name'    => __( 'Media Type', bhv_get_theme_text_domain() ),
 		'id'      => $prefix . 'select_media',
@@ -163,5 +196,22 @@ function bhv_register_media_box() {
 		'id'   => 'movie',
 		'type' => 'oembed',
 	) );
+	
+	// SELECT FIELD (Amount of Columns)
+	$cmb_media_group->add_group_field( $group_field_id, array(
+		'name'             => __( 'Layout Columns', bhv_get_theme_text_domain() ),
+		'desc'             => __( 'Choose the amount of columns to display the content', bhv_get_theme_text_domain() ),
+		'id'      		   => $prefix . 'select_columns',
+		'type'             => 'select',
+		'show_option_none' => false,
+		'options'          => array(
+			1	 	   	   => '1' . __( ' Colum', bhv_get_theme_text_domain() ),
+			2	 	   	   => '2' . __( ' Columns', bhv_get_theme_text_domain() ),
+			3	 	   	   => '3' . __( ' Columns', bhv_get_theme_text_domain() ),
+			4	 	   	   => '4' . __( ' Columns', bhv_get_theme_text_domain() ),
+			6	 	   	   => '6' . __( ' Columns', bhv_get_theme_text_domain() ),
+		),
+		'default'          => 2,		
+	) );	
 }
 

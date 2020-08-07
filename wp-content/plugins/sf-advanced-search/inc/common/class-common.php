@@ -92,18 +92,27 @@ class Common {
 
 		$transient_name = $this->plugin_transients['autosuggest_transient'];
 		$cached_posts_titles = array();
+		$cached_posts_data = array();
 
 		// check if cached posts are available.
 		$cached_posts = get_transient( $transient_name );
+		
 		if ( $cached_posts ) {
 			foreach ( $cached_posts as $index => $post ) {
 				$cached_posts_titles[ $index ] = $post[ 'title' ];
+				$cached_posts_data[ $index ] = array(
+					'id' => $post[ 'id' ],
+					'title' => $post[ 'title' ],
+					'terms' => $post[ 'post_terms' ],
+				);				
 			}
 		}
 
+		// make data available in JavaScript
 		$params = array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
 			'cached_post_titles' => $cached_posts_titles,
+			'cached_posts_data' => $cached_posts_data,
 		);
 		
 		wp_enqueue_script( 'nds_advanced_search', plugin_dir_url( __FILE__ ) . 'js/sf-advanced-search.js', array( 'jquery', 'jquery-ui-autocomplete' ), $this->version, true );
@@ -172,14 +181,14 @@ class Common {
 				foreach ( $posts_in_required_post_types as $key => $post ) {
 					
 					// get terms
-//					$taxonomy ='teacher';
-//					$terms = get_the_terms( $post->ID, $taxonomy );
+					$taxonomy = 'teacher';
+					$terms = get_the_terms( $post->ID, $taxonomy );
 
 					// cache the post titles and post ids.
 					$cached_post = array(
 						'id' 	=> $post->ID,
 						'title' => esc_html( $post->post_title ),
-//						'terms' => ! empty( $terms ) ? $terms : false,
+						'post_terms' => ! empty( $terms ) ? $terms : false,
 					);
 					$cached_posts[] = $cached_post;
 				}
@@ -209,6 +218,7 @@ class Common {
 
 		// check if cached posts are available.
 		$cached_posts = get_transient( $transient_name );
+		
 		if ( false === $cached_posts ) {
 
 			// retrieve posts by running a new query and cache the posts in the transient as well.
@@ -216,12 +226,20 @@ class Common {
 		}
 
 		$cached_post_titles = array();
+		$cached_posts_data = array();
+		
 		foreach ( $cached_posts as $index => $post ) {
-			$cached_post_titles[ $index ] = $post['title'];
+			$cached_post_titles[ $index ] = $post[ 'title' ];
+			$cached_posts_data[ $index ] = array(
+				'id' => $post[ 'id' ],
+				'title' => $post[ 'title' ],
+				'terms' => $post[ 'post_terms' ],
+			);
 		}
 
 		// Echo the response to the AJAX request.
-		wp_send_json( $cached_post_titles );
+//		wp_send_json( $cached_post_titles );
+		wp_send_json( $cached_posts_data );
 
 		// wp_send_json will also die().
 	}

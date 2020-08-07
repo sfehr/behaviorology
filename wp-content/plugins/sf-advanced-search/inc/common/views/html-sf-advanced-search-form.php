@@ -63,7 +63,7 @@ $sf_advanced_search_nonce = wp_create_nonce( 'sf_advanced_search_form_nonce' );
 		<div class="sf-input-container">
 			<label for="sf-search-box">
 				<span class="screen-reader-text"><?php echo esc_attr_x( 'Search for:', 'label', $this->plugin_text_domain ); ?></span>
-				<input class="sf-search-input" id="sf-search-box" type="search" class="search-field" placeholder="<?php echo esc_attr_x( 'Search &hellip;', 'placeholder', $this->plugin_text_domain ); ?>" name="<?php echo esc_attr( $this->plugin_name ); ?>[search_key]" />
+				<input class="sf-search-input" id="sf-search-box" type="search" class="search-field" placeholder="<?php echo esc_attr_x( 'Search', 'placeholder', $this->plugin_text_domain ); ?>" name="<?php echo esc_attr( $this->plugin_name ); ?>[search_key]" />
 			</label>
 			<div class="sf-search-options-container">
 				<div id="sf-search-options" class="sf-search-options">

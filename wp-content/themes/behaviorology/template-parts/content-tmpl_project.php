@@ -9,7 +9,7 @@
 
 // GET CUSTOM FIELDS
 $group_entries = bhv_get_media_group_entries(); // img size
-$section_links = '<li class="menu-item"><a class="section-link" href="#content">' . esc_html__( 'Hypothesis', bhv_get_theme_text_domain() ) . '</a></li>';
+$section_links = '<li class="menu-item"><a class="section-link" href="#content">' . esc_html( bhv_get_text_content_term() ) . '</a></li>';
 // retrieve the titles
 foreach( $group_entries as $entry ){
 //	print '<li class="menu-item"><a class="section-link" href="#' . esc_attr( bhv_create_slug( $entry[ 'group_title' ] ) ) . '">' . $entry[ 'group_title' ] . '</a></li>';
@@ -61,7 +61,7 @@ foreach( $group_entries as $entry ){
 	<?php
 	// retrieve the media
 	foreach( $group_entries as $entry ){
-		print '<section id="' . esc_attr( bhv_create_slug( $entry[ 'group_title' ] ) ) . '" class="section section-media">' . $entry[ 'media' ] . '</section>';
+		print '<section id="' . esc_attr( bhv_create_slug( $entry[ 'group_title' ] ) ) . '" class="section section-media" data-columns="' . esc_attr( $entry[ 'columns' ] ) . '">' . $entry[ 'media' ] . '</section>';
 	}
 	?>	
 	
