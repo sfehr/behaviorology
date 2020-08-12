@@ -111,7 +111,7 @@ class Common {
 		// make data available in JavaScript
 		$params = array(
 			'ajaxurl' => admin_url( 'admin-ajax.php' ),
-			'cached_post_titles' => $cached_posts_titles,
+//			'cached_post_titles' => $cached_posts_titles,
 			'cached_posts_data' => $cached_posts_data,
 		);
 		
@@ -180,15 +180,30 @@ class Common {
 			if ( $posts_in_required_post_types ) {
 				foreach ( $posts_in_required_post_types as $key => $post ) {
 					
+					// define taxonomies to loop through
+					$taxonomies = array( 'teacher', 'student' );
+					$post_terms = array();
+					
 					// get terms
-					$taxonomy = 'teacher';
-					$terms = get_the_terms( $post->ID, $taxonomy );
+					// loop through the taxonomies applied to the post
+					foreach( $taxonomies as $taxonomy ){
+						$terms = get_the_terms( $post->ID, $taxonomy );
+					
+						// loop through the terms of a taxonomy (if not empy)
+						if( ! empty( $terms ) ){
+							// loop through the terms of a taxonomy
+							foreach( $terms as $term ){
+								$post_terms[] = $term->name;
+							}	
+						}		
+					}
 
 					// cache the post titles and post ids.
 					$cached_post = array(
 						'id' 	=> $post->ID,
 						'title' => esc_html( $post->post_title ),
-						'post_terms' => ! empty( $terms ) ? $terms : false,
+//						'post_terms' => ! empty( $terms ) ? $terms : false,
+						'post_terms' => ! empty( $post_terms ) ? $post_terms : false,
 					);
 					$cached_posts[] = $cached_post;
 				}
@@ -225,11 +240,11 @@ class Common {
 			$cached_posts = $this->cache_posts_in_post_types();
 		}
 
-		$cached_post_titles = array();
+//		$cached_post_titles = array();
 		$cached_posts_data = array();
 		
 		foreach ( $cached_posts as $index => $post ) {
-			$cached_post_titles[ $index ] = $post[ 'title' ];
+//			$cached_post_titles[ $index ] = $post[ 'title' ];
 			$cached_posts_data[ $index ] = array(
 				'id' => $post[ 'id' ],
 				'title' => $post[ 'title' ],
@@ -239,9 +254,8 @@ class Common {
 
 		// Echo the response to the AJAX request.
 //		wp_send_json( $cached_post_titles );
-		wp_send_json( $cached_posts_data );
-
-		// wp_send_json will also die().
+		wp_send_json( $cached_posts_data ); // wp_send_json will also die().
+		
 	}
 	
 	

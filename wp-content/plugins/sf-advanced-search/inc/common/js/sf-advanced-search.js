@@ -8,44 +8,51 @@
 	var sameAjaxRequest;
 
 	// get cached post titles from the params object of wp_localize_script.
-	var cachedPostTitles = ( false !== params.cached_post_titles && params.cached_post_titles.length ) ? params.cached_post_titles : false;
+//	var cachedPostTitles = ( false !== params.cached_post_titles && params.cached_post_titles.length ) ? params.cached_post_titles : false;
 	
 	// get cached posts data from the params object of wp_localize_script.
-	var cachedPostsData = ( false !== params.cached_posts_data ) ? params.cached_posts_data : false;	
+	var cachedPostsData = ( false !== params.cached_posts_data && params.cached_posts_data.length ) ? params.cached_posts_data : false;
 	
 	if( cachedPostsData ) {
 
-			// this will be visible when you have run the search at least once.
-			// you will need to extract the title and image uri and use it accordingly.
-			// see how I extracted the image uri in the .done() function of the AJAX request below.
-			console.log( "Cached retrieved from WordPress ");
-			console.log( cachedPostsData );
+		// this will be visible when you have run the search at least once.		
+		// extract the data
+		cachedPostsData = sf_extract_data( cachedPostsData );		
+		
 	}	
 	
+	// the css class '.sf-search-result-container' can optionally be used as a container (stated in the plugin amdin page). If not used '#sf-form-response-container' will be used instead
 	var resultsContainer = ( undefined !== $( '.sf-search-result-container' ) ) ? $( '.sf-search-result-container' ) : $( '#sf-form-response-container' );
 	
 	// AUTO-SUGGEST
 	
 	$( "#sf-advanced-search-form #sf-search-box" ).autocomplete({
 		delay: 300,
-		disabled: true,
+//		disabled: true,
+		appendTo: '.sf-input-container label',
+//		position: { 
+//			within : '#sf-search-box', 
+//		},
 		source: function( request, response ) {
 
 			// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp.
 			var matcher = new RegExp( $.ui.autocomplete.escapeRegex( request.term ), "i" );
 
-			
-			var searchTitlesForSuggestions = function( searchTitles ) {
+			// function to search for suggestions
+			var searchTitlesForSuggestions = function( searchData ) {
 
 				// function used to search the key in the post titles.
-				var suggestions = $.grep( searchTitles, function( item ) {
+				var suggestions = $.grep( searchData, function( item ) {
 									return matcher.test( item );
 								});
 
 				// cache the search term with its data in a hash map.
-				cachedPostTitles = searchTitles;
-				searchCache[request.term] = suggestions;
-
+				cachedPostsData = searchData;
+				searchCache[ request.term ] = suggestions;
+				
+				// limit the results to one entry
+				suggestions = suggestions.slice( 0, 1 );
+				
 				return suggestions;
 			};
 			
@@ -54,23 +61,22 @@
 			if ( request.term in searchCache ) {
 
 				// return suggestions using the cache object. 
-				response( searchCache[request.term] );
-
+				response( searchCache[ request.term ] );
+				
 				// exit and avoid an ajax call as we can use data that was cached in earlier ajax calls.
 				return;
 
 			} // else check if cached post tiles exists.
-			else if ( cachedPostTitles ) {
-
+			else if ( cachedPostsData ) {				
+				
 				// cachedPostTitles array may have been set in previous AJAX call or inititally by wp_localize_script.
-				var searchSuggestions = searchTitlesForSuggestions( cachedPostTitles );
-
+				var searchSuggestions = searchTitlesForSuggestions( cachedPostsData );
+				
 				// return the suggestions for the search term.
 				response( searchSuggestions );
 
 				// exit and avoid an ajax call as we can use data that was cached in earlier ajax calls.
 				return;
-
 			}
 			
 			
@@ -95,8 +101,9 @@
 					if ( jqXHR === sameAjaxRequest && null !== data && "undefined" !== typeof( data ) ) {
 
 						// data contains the post titles sent by the AJAX handler.
-						var searchSuggestions = searchTitlesForSuggestions( data );
-
+						// extract the data
+						data = sf_extract_data( data );
+						var searchSuggestions = searchTitlesForSuggestions( postData );
 						// return the suggestions for the search term.
 						response( searchSuggestions );
 
@@ -106,7 +113,6 @@
 				// on failure.
 				.fail( function( xhr, status, errorThrown ) {
 
-					$( "#sf-search-box" ).css( "background-color", "yellow" );
 					$( "#sf-search-box" ).val( "An error occurred ..." );
 				})
 
@@ -117,7 +123,7 @@
 
 
 		},
-		minLength: 3
+		minLength: 3,
 	});
 	
 	
@@ -147,8 +153,6 @@
 		//add our own ajax check as X-Requested-With is not always reliable
 		ajax_form_data = ajax_form_data + '&ajaxrequest=true&submit=Submit+Form';		
 		
-		console.log( ajax_form_data );
-		
 		// AJAX call is made 
 		var searchAjaxRequest = $.ajax({
 			url: params.ajaxurl, // domain/wp-admin/admin-ajax.php
@@ -172,6 +176,42 @@
             });	
 		
 	});
+	
+	
+	// DATA EXTRACTION 
+	function sf_extract_data( data ) {
+		
+		// POST TITLES
+		var postTitles = data.map( function( post ) {
+			return post.title; // 1D Array
+		});
+
+		// POST TERMS
+		var postTerms_arr = data.map( function( post ) {
+			return post.terms; // 2D Array
+		});
+
+		// convert 2D array to 1D and avoids empty (false) terms
+		var postTerms = [];
+		for( var i = 0; i < postTerms_arr.length; i++ ){
+			if( postTerms_arr[ i ] ){ 
+				postTerms = postTerms.concat( postTerms_arr[ i ] );
+			}
+		}
+
+		// merge titles and terms to one array
+		var postData = $.merge( $.merge( [], postTitles ), postTerms );
+		// remove duplicates in array
+		postData = uniq( postData );
+		
+		return postData;
+	}
+	
+	
+	// REMOVE DUPLICATES IN ARRAY
+	function uniq( a ) {
+		return Array.from( new Set( a ) );
+	}
 	
 
 })( jQuery );

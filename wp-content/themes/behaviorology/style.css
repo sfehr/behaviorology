@@ -1705,33 +1705,31 @@ p:last-of-type{
 .sf-input-container,
 #sf-search-box
 {
-	display: none; 
+	display: none;
 	position: absolute;
 	top: 0;
 	width: 100%;
 	height: 100%;
 	background: transparent;
+	overflow: hidden;
 }
 
 #sf-search-box{
-	top: unset;
-}
-
-#sf-search-box{
-	display: flex;
-	top: 0; 
+	display: block;
+	top: 6px; 
 	bottom: 0; 
 	border: 0;
 	color: black;
 	font-size: var(--font-size-l);
 	font-family: var(--font-family-display);
-	margin-top: 3px;
 	margin-left: 3px;
-	box-sizing: content-box;
+	line-height: normal;
+	box-sizing: border-box;
+	height: 100%;
 }
 
 #sf-search-box:focus{
-	outline: thin;
+	outline: none;
 }
 
 .search-active .sf-advanced-search-form-container,
@@ -1741,7 +1739,6 @@ p:last-of-type{
 .result-view .sf-advanced-search-form-container,
 .result-view #sf-advanced-search-form,
 .result-view .sf-input-container,
-/*.result-view #sf-search-box, */
 .sf-search-result-container
 {
 	z-index: 2;
@@ -1764,6 +1761,28 @@ p:last-of-type{
 
 .sf-search-input::-webkit-search-cancel-button{
 	display: none;
+}
+
+.ui-autocomplete.ui-front{
+	z-index: -1 !important;
+	width: 100% !important;
+	height: 100% !important;
+	top: 0 !important;
+	opacity: 0.2;
+	text-transform: lowercase;
+	border: none;
+	margin-left: 3px !important;
+}
+
+input:focus + .ui-autocomplete.ui-front{
+	display: block !important;
+}
+
+.ui-autocomplete.ui-front .ui-menu-item{
+	font-family: var(--font-family-display) !important;
+	font-size: var(--font-size-l) !important;
+	padding: 0 !important;
+	margin-left: 3px !important;
 }
 
 /* Marquee */

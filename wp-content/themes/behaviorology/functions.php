@@ -595,7 +595,7 @@ function bhv_get_list_entries() {
 	$project_class = bhv_get_terms( get_the_ID(), 'class_category', '–' );
 	$project_type = bhv_get_terms( get_the_ID(), 'student_project_type', '–' );	
 	$project_year = get_the_date( 'Y' );
-	$quarter = ' ' . ceil( get_the_date( 'm' ) / 3 ) . 'Q'; // date divided in quarters	
+//	$quarter = ' ' . ceil( get_the_date( 'm' ) / 3 ) . 'Q'; // date divided in quarters	
 	
 	// MARKUP
 	?>	
@@ -604,7 +604,7 @@ function bhv_get_list_entries() {
 	<div class="list-teacher"><?php echo $project_teacher ?></div>
 	<div class="list-class"><?php echo $project_class ?></div>
 	<div class="list-type"><?php echo $project_type ?></div>
-	<div class="list-date"><?php echo $project_year . $quarter ?></div>
+	<div class="list-date"><?php echo $project_year /* . $quarter */ ?></div>
 	<?php
 }
 
@@ -802,7 +802,7 @@ function bhv_modify_wp_query( $query ) {
 							'compare' => '==',
 						); 
 		
-		// SET
+		// QUERY SET
 		$query->set( 'meta_query', $meta_query ); //Add our meta query to the original meta queries
 		$query->set( 'post_type', $post_types );
 		$query->set( 'posts_per_page', 5 );
@@ -811,6 +811,4 @@ function bhv_modify_wp_query( $query ) {
 	}
 }
 add_action( 'pre_get_posts', 'bhv_modify_wp_query' );
-
-
 

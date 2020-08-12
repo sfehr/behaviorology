@@ -42,7 +42,6 @@ $args = array(
 
 
 // TAX QUERY OPTIONS
-
 $user_selected_taxonomies = isset( $get_form_input['sf_taxonomies'] ) ? wp_unslash( $get_form_input['sf_taxonomies'] ) : array();
 // create a dynamic tax_query if the user selected taxonomy terms in the search filters.
 $tax_query = array();
@@ -85,7 +84,6 @@ foreach ( $user_selected_taxonomies as $taxonomy_slug => $taxonomy_terms ) {
 
 
 // CHECK SEARCH OPTIONS
-
 // whether to include the tax_query in the wp_query args.
 if ( ! empty( $tax_query ) ) {
 	$args['tax_query'] = $tax_query;
@@ -99,9 +97,9 @@ if ( ! empty( $meta_query ) ) {
 */
 
 // SEARCH QUERY 
-
 $search_query = new \WP_Query( $args );
 
+// CUSTOM TEMPLATE
 // uses template for markup if set in plugin options, or uses the markup bellow if otherwise.
 if ( locate_template( 'template-parts/content-' . $template . '.php' ) ) {
 ?>
@@ -124,7 +122,7 @@ if ( locate_template( 'template-parts/content-' . $template . '.php' ) ) {
 	</div> <!-- sf-search-results -->
 <?php
 }
-
+// STANDARD TEMPLATE
 else{
 	
 ?>	
