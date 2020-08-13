@@ -1390,6 +1390,7 @@ p:last-of-type{
 .expanded .list-image{
 	margin-top: 7px;
 	max-height: calc( 50vw - ( var(--space-m) * 2 ) );
+	height: calc( 100% - 10px);
 	overflow: hidden;
 }
 
@@ -1399,7 +1400,7 @@ p:last-of-type{
 }
 
 .list-image .list-link img{
-	height: 100%;
+/*	height: 100%; */
 	object-fit: cover;
 	object-position: center center;
 }
@@ -1604,6 +1605,11 @@ p:last-of-type{
 	grid-area: auto / 2 / auto / 6;
 }
 
+.section-credits .term-item{
+	white-space: unset;
+	overflow: unset;
+}
+
 
 .type-page .entry-content{
 	grid-area: auto / auto / auto / span 8;	
@@ -1700,32 +1706,34 @@ p:last-of-type{
 ---------------------------------------------------------------*/
 
 /* SF Advanced Search */
+
+.sf-advanced-search-form-container{
+	display: none;
+	position: absolute;
+	top: 0;
+}
+
 .sf-advanced-search-form-container,
 #sf-advanced-search-form,
 .sf-input-container,
 #sf-search-box
 {
-	display: none;
-	position: absolute;
-	top: 0;
-	width: 100%;
-	height: 100%;
 	background: transparent;
-	overflow: hidden;
+	width: 100%;
 }
 
 #sf-search-box{
 	display: block;
-	top: 6px; 
-	bottom: 0; 
 	border: 0;
 	color: black;
 	font-size: var(--font-size-l);
 	font-family: var(--font-family-display);
 	margin-left: 3px;
-	line-height: normal;
 	box-sizing: border-box;
-	height: 100%;
+	height: unset;
+	margin: 0;
+	padding: 0;
+	margin-left: 6px;	
 }
 
 #sf-search-box:focus{
@@ -1743,10 +1751,6 @@ p:last-of-type{
 {
 	z-index: 2;
 	display: block; 
-}
-
-.sf-advanced-search-form-container{
-	overflow: hidden;
 }
 
 ::placeholder
@@ -1772,6 +1776,8 @@ p:last-of-type{
 	text-transform: lowercase;
 	border: none;
 	margin-left: 3px !important;
+	
+	display: block !important;
 }
 
 input:focus + .ui-autocomplete.ui-front{
@@ -1782,7 +1788,6 @@ input:focus + .ui-autocomplete.ui-front{
 	font-family: var(--font-family-display) !important;
 	font-size: var(--font-size-l) !important;
 	padding: 0 !important;
-	margin-left: 3px !important;
 }
 
 /* Marquee */
@@ -1833,7 +1838,7 @@ input:focus + .ui-autocomplete.ui-front{
 # Media Queries
 ---------------------------------------------------------------*/
 
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1300px) {
 	
 	:root {
 		--font-size-m: 22px;
@@ -1856,13 +1861,13 @@ input:focus + .ui-autocomplete.ui-front{
 		right: 14px;
 		left: unset;
 	}
-	
-	#sf-search-box{
-		top: -8px;
-	}
 		
 	.site-main{
 		margin-top: calc( var(--space-m) * 3 );
+	}
+	
+	.expanded .list-image{
+		max-height: unset;
 	}	
 	
 	.list-entry.type-class{
@@ -1888,7 +1893,7 @@ input:focus + .ui-autocomplete.ui-front{
 	.section-media .itm,
 	.type-page .entry-content
 	{
-		grid-area: auto / 1 / auto / -1;
+		grid-area: auto / 1 / auto / -1 !important;
 		font-size: var(--font-size-s);
 	}
 	
@@ -1922,7 +1927,11 @@ input:focus + .ui-autocomplete.ui-front{
 	{
 		padding-top: 15px;
 		padding-bottom: 15px;
-	}	
+	}
+	
+	.sf-advanced-search-form-container{
+		top: -3px;
+	}
 	
 }
 

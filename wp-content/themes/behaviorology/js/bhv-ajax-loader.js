@@ -66,6 +66,7 @@ jQuery( document ).ready( function( $ ) {
 				if( '' == link_obj.term_id && '' !== link_obj.post_id && undefined == link_obj.type ){
 					$( 'body' ).addClass( 'single' );
 					$( 'body' ).removeClass( 'list-view' );
+					$( 'html, body' ).animate( { scrollTop: 0 }, 'slow' );
 				}
 				
 				// PAGE

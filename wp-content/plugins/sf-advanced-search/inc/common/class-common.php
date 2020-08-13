@@ -181,7 +181,7 @@ class Common {
 				foreach ( $posts_in_required_post_types as $key => $post ) {
 					
 					// define taxonomies to loop through
-					$taxonomies = array( 'teacher', 'student' );
+					$taxonomies = array( 'teacher', 'student', 'student_project_type', 'class_category' );
 					$post_terms = array();
 					
 					// get terms
@@ -202,7 +202,6 @@ class Common {
 					$cached_post = array(
 						'id' 	=> $post->ID,
 						'title' => esc_html( $post->post_title ),
-//						'post_terms' => ! empty( $terms ) ? $terms : false,
 						'post_terms' => ! empty( $post_terms ) ? $post_terms : false,
 					);
 					$cached_posts[] = $cached_post;

@@ -188,7 +188,7 @@ function behaviorology_scripts() {
 	
 	wp_enqueue_script( 'behaviorology-ui-interaction', get_template_directory_uri() . '/js/bhv-ui-interaction.js',  array( 'jquery' ), _S_VERSION, true );
 	
-	wp_enqueue_script( 'tinysort-js', 'https://cdnjs.cloudflare.com/ajax/libs/tinysort/3.2.5/tinysort.min.js', array( 'jquery' ), _S_VERSION, true );
+	wp_enqueue_script( 'tinysort-js', get_template_directory_uri() . '/js/tinysort.min.js', array( 'jquery' ), _S_VERSION, true );
 	
 	// Ajax Loader Scripts
 	$sfAjaxLoaderParams = array(
@@ -423,8 +423,9 @@ function sf_ajax_loader_handler() {
 	
 	// ARGS
 	$args = array(
-		'post_type' => $post_type,
-		'p'		    => $post_id,
+		'post_type' 		=> $post_type,
+		'p'		    		=> $post_id,
+		'posts_per_page' 	=> -1
 	);
 		
 	// TAX QUERY
@@ -614,6 +615,19 @@ function bhv_get_list_entries() {
  *  Add meta tags to the head
  */
 function bhv_custom_head() {
+	
+	// GMT
+	echo "
+		<!-- Google Tag Manager -->
+		<script>
+			(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer','GTM-NL2TTWV');
+		</script>
+		<!-- End Google Tag Manager -->
+	";	
 
 	// TYPEFACE (EN)
 	echo '<link rel="stylesheet" href="https://use.typekit.net/wlv6frg.css">';

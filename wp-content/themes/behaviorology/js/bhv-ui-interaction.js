@@ -14,6 +14,7 @@
  * sf_close_button()				| Handles click event for the close button in header
  * sf_scroll_anchor()				| Smoothly scrolls to the anchor
  * sf_sort_list()					| Sorts the table alphabetically
+ * sf_touch_device()  				| Handles the touch device actions.
  * 
  *
  * 
@@ -326,7 +327,12 @@ function sf_sort_list(){
  */
 function sf_touch_device(){
 	
-	jQuery( 'body' ).on( 'click tap', '.site-title', function(){
-	});
+	var is_coarse = matchMedia( '(pointer:coarse)' ).matches;
 	
+	if( is_coarse ){
+		jQuery( 'body' ).on( 'click', '.main-navigation', function(){
+			jQuery( 'body' ).removeClass( 'initial' );
+			sf_initialize_list();
+		});
+	}	
 }	
