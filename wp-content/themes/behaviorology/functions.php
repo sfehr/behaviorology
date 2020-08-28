@@ -29,7 +29,7 @@
  * bhv_gutenberg_blocks()				 | Limiting Gutenbergs Block elements
  * bhv_custom_post_order()				 | Order Posts by Post Type
  * bhv_modify_wp_query()				 | Modifying the initial WP query with pre_get_posts hook --> Pluginize ?
- *  
+ * bhv_get_quarter()					 | Determines the quarter of the academic year by month number 
  *  
  * 
  * 
@@ -596,7 +596,7 @@ function bhv_get_list_entries() {
 	$project_class = bhv_get_terms( get_the_ID(), 'class_category', '–' );
 	$project_type = bhv_get_terms( get_the_ID(), 'student_project_type', '–' );	
 	$project_year = get_the_date( 'Y' );
-//	$quarter = ' ' . ceil( get_the_date( 'm' ) / 3 ) . 'Q'; // date divided in quarters	
+	$quarter = ' ' . bhv_get_quarter( get_the_date( 'n' ) ) . 'Q';
 	
 	// MARKUP
 	?>	
@@ -605,7 +605,7 @@ function bhv_get_list_entries() {
 	<div class="list-teacher"><?php echo $project_teacher ?></div>
 	<div class="list-class"><?php echo $project_class ?></div>
 	<div class="list-type"><?php echo $project_type ?></div>
-	<div class="list-date"><?php echo $project_year /* . $quarter */ ?></div>
+	<div class="list-date"><?php echo $project_year . $quarter ?></div>
 	<?php
 }
 
@@ -800,8 +800,8 @@ add_filter( 'posts_orderby', 'bhv_custom_post_order', 10, 2 );
 
 
 /** SF:
- * Pluginize ?
  * Modifying the initial WP query with pre_get_posts hook
+ * 
  */
 function bhv_modify_wp_query( $query ) {
 
@@ -825,4 +825,33 @@ function bhv_modify_wp_query( $query ) {
 	}
 }
 add_action( 'pre_get_posts', 'bhv_modify_wp_query' );
+
+
+
+
+/** SF:
+ * Determines the quarter of the academic year by month number
+ * 
+ */
+function bhv_get_quarter( $month ) {
+	
+	$quarter = array(
+		0 => '',
+		1 => '4',
+		2 => '4',
+		3 => '4',
+		4 => '1',
+		5 => '1',
+		6 => '1',
+		7 => '2',
+		8 => '2',
+		9 => '2',
+		10 => '3',
+		11 => '3',
+		12 => '3',
+	);
+	
+	return $quarter[ $month ];
+	
+}
 

@@ -51,13 +51,29 @@ jQuery( document ).ready( function( $ ) {
 			url        : url, // domain/wp-admin/admin-ajax.php
 			type       : 'POST',
 			data       : data,
-//			beforeSend : function ( xhr ) {
-//				button.text('Loading...'); // change the button text, you can also add a preloader image
-//			},			
+			beforeSend : function () {
+				// LOADER: insert a loading status
+				var loader_msg = '<div class="loader-state">Loading ...</div>';
+				
+				if( jQuery( '.loader-state' ).length === 0 ){
+					if( jQuery( 'body' ).hasClass( 'home' ) ){
+						jQuery( '.studio-container' ).append( loader_msg );
+						jQuery( '.studio-container .menu-container' ).hide();
+					}
+					else{
+						jQuery( content_container ).html( loader_msg );
+					}
+				}
+			},			
 		})
 			
 			// on success
             .done( function( response ) { // response from the PHP action
+				
+				// LOADER: Remove loading status
+				jQuery( '.loader-state' ).remove();
+				jQuery( '.studio-container .menu-container' ).show();
+				
                 $( content_container ).html( response[ 'data' ] );
 				$( '#page-title' ).text( link_obj.name );
 				$( 'body' ).removeClass( 'home initial' );

@@ -1435,6 +1435,8 @@ p:last-of-type{
 .list-entry > .list-students
 {
 	grid-area: auto / auto / auto / span 3;
+	align-content: end;
+	align-items: end;
 }
 
 .list-header > .header-date,

@@ -306,15 +306,19 @@ function sf_sort_list(){
 		tableHeaderIndex = Array.prototype.indexOf.call( tableHeaders, tableHeader );
 		isAscending = tableHeader.getAttribute( 'data-order' ) === 'asc';
 		order = isAscending ? 'desc' : 'asc';
-		tableHeader.setAttribute( 'data-order', order );
+		tableHeaders.forEach( element => element.removeAttribute( 'data-order' ) ); // remove previous order attribute
+		tableHeader.setAttribute( 'data-order', order ); // set order attribute
+		
+		// Sorting
 		tinysort(
 			table.querySelectorAll( '.list-entry:not(.type-class)' )
 			,{
-				order: order
+				order: order,
+				natural: true,
 			}
 		);
 		
-		tableHeader.appendChild( sortIcon );
+		tableHeader.appendChild( sortIcon ); // add sort icon
 	});	
 }
 
